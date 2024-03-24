@@ -1,56 +1,95 @@
 {
-  inputs = {
-    pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
-    pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    devenv.url = "github:cachix/devenv?dir=src/modules";
-  } // (if builtins.pathExists ./.devenv/flake.json 
-       then builtins.fromJSON (builtins.readFile ./.devenv/flake.json)
-       else {});
+  inputs =
+    let
+      version = "1.0.1";
+      system = "x86_64-linux";
+      devenv_root = "/home/dzr/projects/git.shymega.org.uk/dera-project/nhrc_ti_to_dashboard";
+      devenv_dotfile = ./.devenv;
+      devenv_dotfile_string = ".devenv";
+      container_name = null;
+      tmpdir = "/run/user/1000";
+
+    in
+    {
+      pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
+      pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
+      nixpkgs.url = "github:cachix/devenv-nixpkgs/rolling";
+      devenv.url = "github:cachix/devenv?dir=src/modules";
+    } // (if builtins.pathExists (devenv_dotfile + "/flake.json")
+    then builtins.fromJSON (builtins.readFile (devenv_dotfile + "/flake.json"))
+    else { });
 
   outputs = { nixpkgs, ... }@inputs:
     let
-      devenv = if builtins.pathExists ./.devenv/devenv.json
-        then builtins.fromJSON (builtins.readFile ./.devenv/devenv.json)
-        else {};
+      version = "1.0.1";
+      system = "x86_64-linux";
+      devenv_root = "/home/dzr/projects/git.shymega.org.uk/dera-project/nhrc_ti_to_dashboard";
+      devenv_dotfile = ./.devenv;
+      devenv_dotfile_string = ".devenv";
+      container_name = null;
+      tmpdir = "/run/user/1000";
+
+      devenv =
+        if builtins.pathExists (devenv_dotfile + "/devenv.json")
+        then builtins.fromJSON (builtins.readFile (devenv_dotfile + "/devenv.json"))
+        else { };
       getOverlays = inputName: inputAttrs:
-        map (overlay: let
-            input = inputs.${inputName} or (throw "No such input `${inputName}` while trying to configure overlays.");
-          in input.overlays.${overlay} or (throw "Input `${inputName}` has no overlay called `${overlay}`. Supported overlays: ${nixpkgs.lib.concatStringsSep ", " (builtins.attrNames input.overlays)}"))
-          inputAttrs.overlays or [];
-      overlays = nixpkgs.lib.flatten (nixpkgs.lib.mapAttrsToList getOverlays (devenv.inputs or {}));
+        map
+          (overlay:
+            let
+              input = inputs.${inputName} or (throw "No such input `${inputName}` while trying to configure overlays.");
+            in
+              input.overlays.${overlay} or (throw "Input `${inputName}` has no overlay called `${overlay}`. Supported overlays: ${nixpkgs.lib.concatStringsSep ", " (builtins.attrNames input.overlays)}"))
+          inputAttrs.overlays or [ ];
+      overlays = nixpkgs.lib.flatten (nixpkgs.lib.mapAttrsToList getOverlays (devenv.inputs or { }));
       pkgs = import nixpkgs {
-        system = "x86_64-linux";
+        inherit system;
         config = {
           allowUnfree = devenv.allowUnfree or false;
-          permittedInsecurePackages = devenv.permittedInsecurePackages or [];
+          allowBroken = devenv.allowBroken or false;
+          permittedInsecurePackages = devenv.permittedInsecurePackages or [ ];
         };
         inherit overlays;
       };
       lib = pkgs.lib;
       importModule = path:
         if lib.hasPrefix "./" path
-        then ./. + (builtins.substring 1 255 path) + "/devenv.nix"
-        else if lib.hasPrefix "../" path 
-            then throw "devenv: ../ is not supported for imports"
-            else let
-              paths = lib.splitString "/" path;
-              name = builtins.head paths;
-              input = inputs.${name} or (throw "Unknown input ${name}");
-              subpath = "/${lib.concatStringsSep "/" (builtins.tail paths)}";
-              devenvpath = "${input}" + subpath + "/devenv.nix";
-              in if builtins.pathExists devenvpath
-                then devenvpath
-                else throw (devenvpath + " file does not exist for input ${name}.");
+        then if lib.hasSuffix ".nix" path
+        then ./. + (builtins.substring 1 255 path)
+        else ./. + (builtins.substring 1 255 path) + "/devenv.nix"
+        else if lib.hasPrefix "../" path
+        then throw "devenv: ../ is not supported for imports"
+        else
+          let
+            paths = lib.splitString "/" path;
+            name = builtins.head paths;
+            input = inputs.${name} or (throw "Unknown input ${name}");
+            subpath = "/${lib.concatStringsSep "/" (builtins.tail paths)}";
+            devenvpath = "${input}" + subpath + "/devenv.nix";
+          in
+          if builtins.pathExists devenvpath
+          then devenvpath
+          else throw (devenvpath + " file does not exist for input ${name}.");
       project = pkgs.lib.evalModules {
         specialArgs = inputs // { inherit inputs pkgs; };
         modules = [
           (inputs.devenv.modules + /top-level.nix)
-          { devenv.cliVersion = "0.6.3"; }
-        ] ++ (map importModule (devenv.imports or [])) ++ [
+          {
+            devenv.cliVersion = version;
+            devenv.root = devenv_root;
+            devenv.dotfile = pkgs.lib.mkForce (devenv_root + "/" + devenv_dotfile_string);
+          }
+          (pkgs.lib.optionalAttrs (inputs.devenv.isTmpDir or false) {
+            devenv.tmpdir = tmpdir;
+          })
+          (pkgs.lib.optionalAttrs (container_name != null) {
+            container.isBuilding = pkgs.lib.mkForce true;
+            containers.${container_name}.isBuilding = true;
+          })
+        ] ++ (map importModule (devenv.imports or [ ])) ++ [
           ./devenv.nix
-          (devenv.devenv or {})
-          (if builtins.pathExists ./devenv.local.nix then ./devenv.local.nix else {})
+          (devenv.devenv or { })
+          (if builtins.pathExists ./devenv.local.nix then ./devenv.local.nix else { })
         ];
       };
       config = project.config;
@@ -69,13 +108,14 @@
               v
           );
       };
-    in {
-      packages."x86_64-linux" = {
+    in
+    {
+      packages."${system}" = {
         optionsJSON = options.optionsJSON;
         inherit (config) info procfileScript procfileEnv procfile;
         ci = config.ciDerivation;
       };
-      devenv.containers = config.containers;
-      devShell."x86_64-linux" = config.shell;
+      devenv = config;
+      devShell."${system}" = config.shell;
     };
 }
