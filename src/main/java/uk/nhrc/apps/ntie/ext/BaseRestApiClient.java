@@ -9,18 +9,16 @@ import java.net.http.HttpClient;
 import java.time.Duration;
 
 public class BaseRestApiClient {
+    protected final ObjectMapper objectMapper = new ObjectMapper();
     private final HttpClient httpClient = HttpClient.newBuilder()
-        .followRedirects(HttpClient.Redirect.ALWAYS)
-        .connectTimeout(Duration.ofSeconds(30))
-        .build();
-
+            .followRedirects(HttpClient.Redirect.ALWAYS)
+            .connectTimeout(Duration.ofSeconds(30))
+            .build();
     private final ClientHttpConnector connector = new JdkClientHttpConnector(httpClient);
     protected final WebClient webClient = WebClient.builder()
-        .clientConnector(connector)
-        .defaultHeader("Accept", "application/json")
-        .build();
-
-    protected final ObjectMapper objectMapper = new ObjectMapper();
+            .clientConnector(connector)
+            .defaultHeader("Accept", "application/json")
+            .build();
 
     protected <T> T readJsonToObject(final String inJson, final Class<T> targetClass) {
         try {
