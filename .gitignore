@@ -20,5 +20,7 @@ drivers/
 error-screenshots/
 webpack.generated.js
 
-/.direnv
-/.devenv
+.direnv
+.devenv*
+devenv.local.nix
+.pre-commit-config.yaml
