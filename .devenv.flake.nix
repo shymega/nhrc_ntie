@@ -1,9 +1,9 @@
 {
   inputs =
     let
-      version = "1.0.1";
+      version = "1.0.2";
       system = "x86_64-linux";
-      devenv_root = "/home/dzr/projects/git.shymega.org.uk/dera-project/nhrc_ti_to_dashboard";
+      devenv_root = "/home/dzr/projects/git.shymega.org.uk/verma-project/nhrc_ntie";
       devenv_dotfile = ./.devenv;
       devenv_dotfile_string = ".devenv";
       container_name = null;
@@ -21,9 +21,9 @@
 
   outputs = { nixpkgs, ... }@inputs:
     let
-      version = "1.0.1";
+      version = "1.0.2";
       system = "x86_64-linux";
-      devenv_root = "/home/dzr/projects/git.shymega.org.uk/dera-project/nhrc_ti_to_dashboard";
+      devenv_root = "/home/dzr/projects/git.shymega.org.uk/verma-project/nhrc_ntie";
       devenv_dotfile = ./.devenv;
       devenv_dotfile_string = ".devenv";
       container_name = null;
@@ -65,11 +65,14 @@
             name = builtins.head paths;
             input = inputs.${name} or (throw "Unknown input ${name}");
             subpath = "/${lib.concatStringsSep "/" (builtins.tail paths)}";
-            devenvpath = "${input}" + subpath + "/devenv.nix";
+            devenvpath = "${input}" + subpath;
+            devenvdefaultpath = devenvpath + "/devenv.nix";
           in
-          if builtins.pathExists devenvpath
+          if lib.hasSuffix ".nix" devenvpath
           then devenvpath
-          else throw (devenvpath + " file does not exist for input ${name}.");
+          else if builtins.pathExists devenvdefaultpath
+          then devenvdefaultpath
+          else throw (devenvdefaultpath + " file does not exist for input ${name}.");
       project = pkgs.lib.evalModules {
         specialArgs = inputs // { inherit inputs pkgs; };
         modules = [
@@ -77,7 +80,7 @@
           {
             devenv.cliVersion = version;
             devenv.root = devenv_root;
-            devenv.dotfile = pkgs.lib.mkForce (devenv_root + "/" + devenv_dotfile_string);
+            devenv.dotfile = devenv_root + "/" + devenv_dotfile_string;
           }
           (pkgs.lib.optionalAttrs (inputs.devenv.isTmpDir or false) {
             devenv.tmpdir = tmpdir;
