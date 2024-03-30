@@ -1,0 +1,47 @@
+---
+name: "Fly.io Deployment Workflow"
+
+on:
+  workflow_call:
+    inputs:
+        is_push:
+            required: true
+            type: boolean
+        is_pr:
+            required: true
+            type: boolean
+        is_push_to_main:
+            required: true
+            type: boolean
+  workflow_dispatch:
+
+jobs:
+  deploy-prod:
+    name: Production deployer to Fly.io
+    if: false
+#    if: ${{ startsWith(github.ref, 'refs/tags/') && inputs.is_pr == false && inputs.is_push == true && inputs.is_push_to_main == true }}
+    runs-on: ubuntu-latest
+    env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Install `flyctl`
+        uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Build and deploy to Fly.io
+        run: flyctl deploy --local-only -c fly-prod.toml
+
+  deploy-staging:
+    name: Staging deployer to Fly.io
+    if: false
+#    if: ${{ inputs.is_pr == false && inputs.is_push == true && inputs.is_push_to_main == true }}
+    runs-on: ubuntu-latest
+    env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Install `flyctl`
+        uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Build and deploy to Fly.io
+        run: flyctl deploy --local-only -c ./fly-staging.toml
