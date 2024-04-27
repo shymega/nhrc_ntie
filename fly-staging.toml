@@ -6,7 +6,7 @@ primary_region = 'lhr'
 
 [build.args]
   BP_NATIVE_IMAGE = "true"
-  BP_JVM_VERSION = "17"
+  BP_JVM_VERSION = "21"
   BP_MAVEN_ACTIVE_PROFILES = "native,production"
   BP_OCI_SOURCE = "https://github.com/shymega/nhrc_ntie"
   BP_SPRING_CLOUD_BINDINGS_DISABLED = "true"
