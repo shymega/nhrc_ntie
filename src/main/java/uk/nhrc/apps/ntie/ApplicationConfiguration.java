@@ -36,7 +36,7 @@ public class ApplicationConfiguration {
         }
     }
 
-    private String getSpringDataSourceURL(final String databaseURL) throws URISyntaxException {
+    private final String getSpringDataSourceURL(final String databaseURL) throws URISyntaxException {
         final URI uri = new URI(databaseURL);
         String username = "";
         String password = "";
@@ -49,7 +49,7 @@ public class ApplicationConfiguration {
             }
         }
         final String host = uri.getHost();
-        int port = uri.getPort();
+        final int port = uri.getPort();
         final String path = uri.getPath();
         String scheme = uri.getScheme();
         if ("postgres".equals(scheme)) {
