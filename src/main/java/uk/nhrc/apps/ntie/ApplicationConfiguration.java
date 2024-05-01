@@ -12,13 +12,11 @@ import java.net.URISyntaxException;
 @Configuration
 public class ApplicationConfiguration {
 
+    private final String DEFAULT_DB_URL = "jdbc:h2:mem:nhrc_ntie;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH";
     @Value("${DATABASE_URL:#{null}}")
     private String DATABASE_URL;
-
     @Value("${spring.datasource.url:#{null}}")
     private String SPRING_DATASOURCE_URL;
-
-    private final String DEFAULT_DB_URL = "jdbc:h2:mem:nhrc_ntie;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH";
 
     @Bean
     public DataSource getDataSource() throws URISyntaxException {
@@ -26,13 +24,13 @@ public class ApplicationConfiguration {
 
         if (DATABASE_URL != null) {
             return builder.url(getSpringDataSourceURL(DATABASE_URL))
-                .build();
+                    .build();
         } else if (SPRING_DATASOURCE_URL != null) {
             return builder.url(SPRING_DATASOURCE_URL)
-                .build();
+                    .build();
         } else {
             return builder.url(DEFAULT_DB_URL)
-                .build();
+                    .build();
         }
     }
 
