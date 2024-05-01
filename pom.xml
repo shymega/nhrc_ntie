@@ -10,7 +10,7 @@
   </parent>
     <groupId>uk.nhrc.apps.ntie</groupId>
     <artifactId>server</artifactId>
-    <name>NHRC: NTIE</name>
+    <name>NHRC: New Ti.to Editor</name>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
