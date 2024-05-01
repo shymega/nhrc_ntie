@@ -4,6 +4,7 @@
   packages = [ pkgs.git pkgs.flyctl ];
   languages.nix.enable = true;
   languages.java.enable = true;
+  languages.java.jdk.package = pkgs.jdk21;
   languages.javascript.enable = true;
   languages.javascript.npm.enable = true;
   languages.typescript.enable = true;
