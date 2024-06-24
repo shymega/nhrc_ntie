@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.0</version>
+        <version>3.3.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>uk.nhrc.apps.ntie</groupId>
@@ -19,7 +19,7 @@
     <properties>
         <hibernate.version>6.4.2.Final</hibernate.version>
         <java.version>21</java.version>
-        <vaadin.version>24.4.2</vaadin.version>
+        <vaadin.version>24.4.3</vaadin.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -176,7 +176,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webflux</artifactId>
-            <version>6.1.9</version>
+            <version>6.1.10</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
