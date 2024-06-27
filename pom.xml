@@ -11,8 +11,8 @@
     </parent>
     <groupId>uk.nhrc.apps.ntie</groupId>
     <artifactId>server</artifactId>
-    <name>NHRC -- Neo Ti.to Editor</name>
-    <description>Helper application for NHRC</description>
+    <name>Neo Ti.to Editor</name>
+    <description>Helper application for Ti.to (specifically for NHRC)</description>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -49,7 +49,7 @@
         <dependency>
 	          <groupId>com.github.verma-project</groupId>
 	          <artifactId>tito-java-sdk</artifactId>
-	          <version>-SNAPSHOT</version>
+	          <version>main-SNAPSHOT</version>
     	  </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
