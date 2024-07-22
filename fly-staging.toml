@@ -1,15 +1,20 @@
+# fly.toml app configuration file generated for nhrc-ntie-staging-server on 2024-07-22T19:15:14+01:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
 app = 'nhrc-ntie-staging-server'
 primary_region = 'lhr'
 
 [build]
-  builder = "paketobuildpacks/builder-jammy-tiny"
+  builder = 'paketobuildpacks/builder-jammy-tiny'
 
-[build.args]
-  BP_NATIVE_IMAGE = "true"
-  BP_JVM_VERSION = "21"
-  BP_MAVEN_ACTIVE_PROFILES = "native,production"
-  BP_OCI_SOURCE = "https://github.com/shymega/nhrc_ntie"
-  BP_SPRING_CLOUD_BINDINGS_DISABLED = "true"
+  [build.args]
+    BP_JVM_VERSION = '21'
+    BP_MAVEN_ACTIVE_PROFILES = 'native,production'
+    BP_NATIVE_IMAGE = 'true'
+    BP_OCI_SOURCE = 'https://github.com/shymega/nhrc_ntie'
+    BP_SPRING_CLOUD_BINDINGS_DISABLED = 'true'
 
 [http_service]
   internal_port = 8080
