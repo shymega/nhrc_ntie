@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.2</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
     <modelVersion>4.0.0</modelVersion>
     <!-- Project from https://start.vaadin.com/project/aa21d9d1-41e8-40f4-bb6c-a31578368618 -->
     <groupId>com.example.application</groupId>
@@ -97,12 +103,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-	          <groupId>com.github.verma-project</groupId>
-	          <artifactId>tito-java-sdk</artifactId>
-	          <version>main-SNAPSHOT</version>
-    	  </dependency>
 
         <!-- Developer utilities -->
         <dependency>
