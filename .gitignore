@@ -9,3 +9,4 @@ vite.generated.ts
 /.pre-commit-config.yaml
 /.direnv*
 /.devenv*/
+/.devenv.flake.nix
